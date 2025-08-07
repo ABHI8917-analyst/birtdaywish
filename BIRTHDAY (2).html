@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Happy Birthday</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: lightpink;
+      font-family: 'Comic Sans MS', cursive;
+      overflow: hidden;
+      transition: background-color 1s;
+    }
+    .box {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #ffe6f0;
+      border-radius: 25px;
+      padding: 30px 80px;
+      width: 90%;
+      max-width: 700px;
+      height: 200px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+    .message, .second-message, .third-message, .fourth-message {
+      font-size: 2rem;
+      font-weight: bold;
+      color: black;
+      margin: 0;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      width: 80%;
+    }
+    .message {
+      top: 40%;
+      animation: fadeIn 2s ease-in-out, shrinkFadeOut 2s ease-in-out 2s forwards;
+    }
+    .second-message {
+      top: 40%;
+      opacity: 0;
+      animation: fadeIn 2s ease-in-out 4s forwards, shrinkFadeOut 2s ease-in-out 6s forwards;
+    }
+    .third-message {
+      opacity: 0;
+      top: 35%;
+    }
+    .buttons {
+      position: absolute;
+      top: 55%;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      gap: 20px;
+      justify-content: center;
+    }
+    .buttons button {
+      font-size: 1rem;
+      font-weight: bold;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .yes-btn {
+      background-color: pink;
+    }
+    .no-btn {
+      background-color: violet;
+      color: white;
+    }
+    .heart {
+      width: 20px;
+      height: 20px;
+      position: absolute;
+      bottom: -30px;
+      transform: rotate(45deg);
+      animation: floatUp linear infinite, sway ease-in-out infinite;
+      opacity: 0.9;
+      pointer-events: none;
+      user-select: none;
+    }
+    .heart::before,
+    .heart::after {
+      content: '';
+      width: 20px;
+      height: 20px;
+      background: inherit;
+      border-radius: 50%;
+      position: absolute;
+    }
+    .heart::before {
+      top: -10px;
+      left: 0;
+    }
+    .heart::after {
+      left: 10px;
+      top: 0;
+    }
+    .fourth-message {
+      top: 45%;
+      opacity: 0;
+      display: none;
+    }
+    .light-btn {
+      display: none;
+      margin-top: 220px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      padding: 15px 100px;
+      border: none;
+      border-radius: 20px;
+      background-color: lightblue;
+      color: black;
+      cursor: pointer;
+      z-index: 10;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    /* --- Ribbon Styles --- */
+    .ribbon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: fixed;
+      top: -100px;
+      left: 0;
+      width: 100vw;
+      z-index: 999;
+      pointer-events: none;
+      animation: slideDownRibbon 1.5s cubic-bezier(.36,1.1,.67,1) forwards;
+      user-select: none;
+    }
+    .ribbon-text {
+      background: linear-gradient(90deg, #e573c2 50%, #ffb3de 100%);
+      color: white;
+      font-size: 2.2rem;
+      font-weight: bold;
+      padding: 22px 80px;
+      border-radius: 60px 60px 30px 30px;
+      box-shadow: 0 6px 24px rgba(237,76,168,0.30);
+      border: 3px solid #fbd4ee;
+      letter-spacing: 2px;
+      position: relative;
+      user-select: none;
+    }
+    @keyframes slideDownRibbon {
+      to { top: 80px; }
+    }
+
+    /* --- Confetti Styles --- */
+    #confettiContainer {
+      position: fixed;
+      left: 50%;
+      top: 160px;
+      width: 0;
+      height: 0;
+      z-index: 9999;
+      pointer-events: none;
+      user-select: none;
+    }
+    .confetti-piece {
+      position: absolute;
+      width: 14px;
+      height: 22px;
+      border-radius: 4px;
+      opacity: 0.85;
+      animation: confetti-fall 1.5s forwards;
+    }
+    @keyframes confetti-fall {
+      to {
+        transform: translateY(420px) rotate(360deg);
+        opacity: 0.15;
+      }
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) rotate(45deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-120vh) rotate(45deg);
+        opacity: 0;
+      }
+    }
+    @keyframes sway {
+      0% { margin-left: 0; }
+      50% { margin-left: 20px; }
+      100% { margin-left: 0; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes shrinkFadeOut {
+      0% {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(-50%) scale(0.8);
+      }
+    }
+
+    /* --- Balloon CSS --- */
+    #balloon-container {
+      pointer-events: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1000;
+      user-select: none;
+      overflow: visible;
+    }
+    .balloon-shape {
+      position: absolute;
+      bottom: -120px;
+      width: 50px;
+      height: 80px;
+      border-radius: 50% 50% 45% 45%;
+      background: #ff6699;
+      box-shadow: inset -6px -10px 16px rgba(0,0,0,0.07);
+      opacity: 0.84;
+    }
+    .balloon-shape::after {
+      content: '';
+      display: block;
+      position: absolute;
+      left: 19px;
+      top: 78px;
+      width: 10px;
+      height: 20px;
+      border-radius: 9px 9px 0 0;
+      background: #bbb;
+      opacity: 0.7;
+    }
+
+    /* --- Cake Styles --- */
+    #cakeContainer {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 300px;
+      z-index: 1001;
+      user-select: none;
+    }
+    .cake-base {
+      position: relative;
+      width: 280px;
+      height: 200px;
+      margin: auto;
+    }
+    .cake-layer {
+      position: absolute;
+      width: 100%;
+      border-radius: 20px 20px 10px 10px;
+      box-shadow: inset 0 -10px 15px rgba(0,0,0,0.1);
+    }
+    .bottom-layer {
+      height: 80px;
+      background: #d15c47;
+      bottom: 0;
+    }
+    .middle-layer {
+      height: 60px;
+      background: #ed8373;
+      bottom: 80px;
+    }
+    .top-layer {
+      height: 40px;
+      background: #f9b0a4;
+      bottom: 140px;
+    }
+    .candles {
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      width: 180px;
+      height: 60px;
+    }
+    .candles .candle {
+      position: absolute;
+      width: 10px;
+      height: 40px;
+      background: #fff;
+      border-radius: 3px;
+      box-shadow: 0 0 3px #bbb inset;
+    }
+    /* Center candles horizontally spaced */
+    .candles .candle:nth-child(1) { left: 30px; }
+    .candles .candle:nth-child(2) { left: 90px; }
+    .candles .candle:nth-child(3) { left: 150px; }
+    .flame {
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      width: 10px;
+      height: 20px;
+      background: radial-gradient(circle at 50% 70%, orange, red);
+      border-radius: 50% 50% 50% 50%;
+      transform: translateX(-50%) scale(1);
+      animation: flicker 1.2s infinite alternate;
+      filter: drop-shadow(0 0 5px orange);
+    }
+    @keyframes flicker {
+      0% {
+        transform: translateX(-50%) scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: translateX(-50%) scale(1.1);
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateX(-50%) scale(0.9);
+        opacity: 1;
+      }
+    }
+    /* Candle blowing out animation */
+    .flame.blowing {
+      animation: blowOut 3s forwards;
+    }
+    @keyframes blowOut {
+      0% {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(-50%) scale(0);
+      }
+    }
+
+    /* Blow candles button below the cake */
+    #blowCandlesBtn {
+      position: fixed;
+      bottom: 320px; /* slightly above cake */
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1002;
+      border-radius: 20px;
+      background-color: #ff69b4;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 12px 60px;
+      display: none;
+      user-select: auto;
+    }
+
+    /* New Message Box styles (centered, no hearts inside) */
+    #newMessageBox {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 900px;
+      max-width: 95vw;
+      height: auto;
+      max-height: 75vh;
+      background: #ffe6f0;
+      border-radius: 25px;
+      padding: 30px 50px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+      transform: translate(-50%, -50%);
+      z-index: 2000;
+      overflow-y: auto;
+      user-select: none;
+      color: #b30059;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.7;
+      font-family: 'Comic Sans MS', cursive;
+      white-space: pre-line;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="box" id="box">
+    <div class="message" id="firstMsg">🌟 It’s your special day Chataki yeyee! 💖✨</div>
+    <div class="second-message" id="secondMsg">🎁 Let’s create something special for you… because you are truly special to me 💝🎉</div>
+    <div class="third-message" id="thirdMsg">💌 do you wanna see what I made for you?</div>
+    <div class="buttons" id="responseBtns">
+      <button class="yes-btn" onclick="showNextStep()">Yes</button>
+      <button class="no-btn">No</button>
+    </div>
+    <div class="fourth-message" id="fourthMsg">🎀 have a look at it madam ji</div>
+  </div>
+
+  <!-- Control buttons -->
+  <button class="light-btn" id="lightBtn" onclick="turnOnLight()">Lights On</button>
+  <button class="light-btn" id="decorateBtn" onclick="decorateRoom()" style="display: none;">Decorate</button>
+  <button class="light-btn" id="balloonBtn" onclick="flyBalloons()" style="display: none;">Fly Balloons</button>
+  <button class="light-btn" id="cutCakeBtn" onclick="showCake()" style="display: none;">Let's cut the cake madam ji</button>
+
+  <!-- Ribbon and Confetti containers -->
+  <div id="ribbonContainer" style="display:none;"></div>
+  <div id="confettiContainer" style="display:none;"></div>
+
+  <!-- Balloon container -->
+  <div id="balloon-container"></div>
+
+  <!-- Cake container -->
+  <div id="cakeContainer">
+    <div class="cake-base">
+      <div class="cake-layer bottom-layer"></div>
+      <div class="cake-layer middle-layer"></div>
+      <div class="cake-layer top-layer"></div>
+      <div class="candles">
+        <div class="candle">
+          <div class="flame"></div>
+        </div>
+        <div class="candle">
+          <div class="flame"></div>
+        </div>
+        <div class="candle">
+          <div class="flame"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Blow candles button -->
+  <button id="blowCandlesBtn">Blow the candles to see something</button>
+
+  <!-- New message box that appears after cake disappears -->
+  <div id="newMessageBox" style="white-space: normal;">
+    <div>
+      Hey Chataki,<br><br>
+      Since the day you came into my life, everything has changed for the better.<br><br>
+      I never imagined someone who would support me, inspire me, and correct me with so much love and care.<br><br>
+      I love you deeply from the bottom of my heart, and I truly want to spend my whole life with you — growing together, traveling to new places, enjoying every little moment, and fulfilling all our dreams side by side.<br><br>
+      You are my strength, my smile, my peace, and the biggest blessing of my life. Every time I think of you, my heart overflows with love, joy, and gratitude, and no matter what life brings, I promise to always stand by your side — in every moment, through every up and down.<br><br>
+      Happy Birthday, my love!<br><br>
+      May your day be as beautiful as your heart, and may this year bring you endless joy, love, and success. ❤️🎂
+    </div>
+  </div>
+
+  <script>
+    function randomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // Heart animation for small hearts floating (page background hearts)
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      heart.style.background = Math.random() > 0.5 ? 'red' : 'deeppink';
+      heart.style.left = Math.random() * 100 + 'vw';
+      const floatDuration = (Math.random() * 5 + 5).toFixed(2);
+      heart.style.animationDuration = `${floatDuration}s, 3s`;
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), floatDuration * 1000);
+    }
+    setInterval(createHeart, 300);
+
+    // Show third message and buttons after initial delay
+    setTimeout(() => {
+      document.getElementById('thirdMsg').style.opacity = '1';
+      document.getElementById('responseBtns').style.display = 'flex';
+    }, 8000);
+
+    // Show next step after "Yes" click
+    function showNextStep() {
+      document.getElementById('thirdMsg').style.display = 'none';
+      document.getElementById('responseBtns').style.display = 'none';
+
+      const fourth = document.getElementById('fourthMsg');
+      fourth.style.display = 'block';
+      fourth.style.opacity = '1';
+
+      setTimeout(() => {
+        fourth.style.display = 'none';
+        document.getElementById('box').style.display = 'none';
+        document.body.style.backgroundColor = 'black';
+        document.getElementById('lightBtn').style.display = 'block';
+      }, 4000);
+    }
+
+    // Lights On button handler
+    function turnOnLight() {
+      document.body.style.backgroundColor = 'lightpink';
+      document.getElementById('lightBtn').style.display = 'none';
+      document.getElementById('decorateBtn').style.display = 'block';
+    }
+
+    // Decorate button handler
+    function decorateRoom() {
+      document.body.style.backgroundColor = '#ffe6f5';
+      document.getElementById('decorateBtn').style.display = 'none';
+
+      // Show ribbon
+      const ribbonContainer = document.getElementById('ribbonContainer');
+      ribbonContainer.innerHTML = `
+        <div class="ribbon">
+          <span class="ribbon-text">🎀 Happy Birthday Chataki 🎀</span>
+        </div>
+      `;
+      ribbonContainer.style.display = 'block';
+
+      // Show confetti bursts below ribbon
+      setTimeout(() => {
+        const confettiContainer = document.getElementById('confettiContainer');
+        confettiContainer.innerHTML = '';
+        confettiContainer.style.display = 'block';
+        for (let i = 0; i < 45; i++) {
+          spawnConfettiPiece(confettiContainer);
+        }
+      }, 1200);
+
+      // Cleanup confetti and reveal Fly Balloons button
+      setTimeout(() => {
+        document.getElementById('confettiContainer').style.display = 'none';
+        document.getElementById('balloonBtn').style.display = 'block';
+      }, 2600);
+    }
+
+    // Spawn single confetti piece
+    function spawnConfettiPiece(container) {
+      const colors = ['#f672a7', '#fceabb', '#ffd6e1', '#ff93aa', '#7fd6fc', '#ffb3f7', '#ffd600'];
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+      let angle = (Math.random() - 0.5) * 1.4;
+      let distance = Math.random() * 220 + 120;
+      let x = Math.cos(angle) * distance;
+      let y = Math.sin(angle) * distance;
+
+      piece.style.transform = `translate(-50%, 0) translate(${x}px, 0px) rotate(${Math.random() * 180}deg)`;
+      piece.style.left = '0px';
+      piece.style.top = '0px';
+      container.appendChild(piece);
+
+      setTimeout(() => {
+        piece.style.transform = `translate(-50%, ${y + 80}px) rotate(${360 + Math.random() * 180}deg)`;
+        piece.style.opacity = '0.15';
+      }, 25);
+
+      setTimeout(() => piece.remove(), 1450);
+    }
+
+    // Balloon colors
+    const balloonColors = ['#ff6699', '#7ec8e3', '#ffd700', '#98fb98', '#ffb347', '#d1b3ff', '#fd6e6a', '#b0e0e6', '#92d2fa', '#ffb6b9'];
+
+    let balloonInterval;
+
+    function startFlyingBalloons() {
+      const balloonContainer = document.getElementById('balloon-container');
+      balloonContainer.innerHTML = '';
+
+      balloonInterval = setInterval(() => {
+        launchBalloon(balloonContainer, balloonColors);
+      }, 500);
+    }
+
+    function flyBalloons() {
+      document.getElementById('balloonBtn').style.display = 'none';
+      startFlyingBalloons();
+
+      setTimeout(() => {
+        document.getElementById('cutCakeBtn').style.display = 'block';
+      }, 3000);
+    }
+
+    function launchBalloon(container, colors) {
+      const balloon = document.createElement('div');
+      balloon.className = 'balloon-shape';
+
+      balloon.style.left = (Math.random() * 90 + 5) + 'vw';
+      balloon.style.background = colors[Math.floor(Math.random() * colors.length)];
+      balloon.style.opacity = 0.85;
+      balloon.style.transform = `scale(${Math.random() * 0.2 + 0.88})`;
+
+      const animDuration = Math.random() * 2700 + 4200;
+      const angle = Math.random() * 90 - 30;
+
+      balloon.animate([
+        { transform: `translateY(0) scale(1) rotate(0deg)` },
+        { transform: `translateY(-110vh) scale(1.05) rotate(${angle}deg)` }
+      ], {
+        duration: animDuration,
+        fill: "forwards"
+      });
+
+      container.appendChild(balloon);
+
+      setTimeout(() => {
+        balloon.remove();
+      }, 7500);
+    }
+
+    function showCake() {
+      const cake = document.getElementById('cakeContainer');
+      const blowBtn = document.getElementById('blowCandlesBtn');
+      cake.style.display = 'block';
+      blowBtn.style.display = 'block';
+
+      const flames = cake.querySelectorAll('.flame');
+      flames.forEach(flame => flame.classList.remove('blowing'));
+
+      blowBtn.onclick = () => {
+        flames.forEach(flame => flame.classList.add('blowing'));
+        blowBtn.style.display = 'none';
+
+        setTimeout(() => {
+          cake.style.display = 'none';
+          showNewMessageBox();
+        }, 3200);
+      };
+
+      document.getElementById('cutCakeBtn').style.display = 'none';
+    }
+
+    function showNewMessageBox() {
+      document.getElementById('newMessageBox').style.display = 'block';
+    }
+  </script>
+
+</body>
+</html>
